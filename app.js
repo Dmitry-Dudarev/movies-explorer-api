@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { rateLimiter } = require('./middlewares/rate-limiter');
-// const cors = require('./middlewares/cors');
+const cors = require('./middlewares/cors');
 const { config } = require('./constants/config');
 
 const routers = require('./routes/index');
@@ -30,7 +30,7 @@ mongoose.connect(DATABASE_URL, {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// app.use(cors);
+app.use(cors);
 
 app.use(routers);
 
