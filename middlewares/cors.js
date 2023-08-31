@@ -1,8 +1,8 @@
 const cors = require('cors');
 
 const allowedCors = [
-  'https://.nomoreparties.co',
-  'http://.nomoreparties.co',
+  'https://Brunneng.nomoredomainsicu.ru',
+  'http://Brunneng.nomoredomainsicu.ru',
 ];
 
 const corsSettings = {
