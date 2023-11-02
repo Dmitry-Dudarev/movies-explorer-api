@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const { rateLimiter } = require('./middlewares/rate-limiter');
-const cors = require('./middlewares/cors');
+// const cors = require('./middlewares/cors');
 const { config } = require('./constants/config');
 
 const routers = require('./routes/index');
@@ -15,7 +15,23 @@ const DATABASE_URL = (process.env.NODE_ENV === 'production'
   : config.devDatabaseURL);
 
 const app = express();
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    'https://brunneng.nomoredomainsrocks.ru',
+    'http://brunneng.nomoredomainsrocks.ru',
+  ];
+  const { origin } = req.headers;
 
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
+  res.header('Access-Control-Allow-Methods', 'GET, HEAD, PUT, PATCH, POST, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+
+  next();
+});
 app.use(helmet({
   hsts: false,
   xssFilter: false,
@@ -30,7 +46,7 @@ mongoose.connect(DATABASE_URL, {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(cors);
+// app.use(cors);
 
 app.use(routers);
 
