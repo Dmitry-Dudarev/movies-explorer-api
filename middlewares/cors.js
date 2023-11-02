@@ -1,15 +1,15 @@
 const cors = require('cors');
 
-// const allowedCors = [
-//   'https://Brunneng.nomoredomainsicu.ru',
-//   'http://Brunneng.nomoredomainsicu.ru',
-// ];
+const allowedCors = [
+  'https://brunneng.nomoredomainsrocks.ru',
+  'http://brunneng.nomoredomainsrocks.ru',
+];
 
 const corsSettings = {
-  // origin: allowedCors,
-  origin: true,
+  origin: allowedCors,
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  allowedHeaders: '*',
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 };
 
 module.exports = (cors(corsSettings));
