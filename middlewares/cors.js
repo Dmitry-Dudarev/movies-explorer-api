@@ -8,7 +8,7 @@ const allowedCors = [
 const corsSettings = {
   origin: allowedCors,
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['*'],
   credentials: true,
 };
 
