@@ -68,9 +68,6 @@ module.exports.login = (req, res, next) => {
       res
         .cookie('jwt', token, {
           maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          sameSite: 'none',
-          secure: true,
         })
         .send({ message: successMessages.loginMessage });
     })
@@ -80,11 +77,7 @@ module.exports.login = (req, res, next) => {
 // выход из учетной записи
 module.exports.logout = (req, res, next) => {
   try {
-    res.clearCookie('jwt', {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-    });
+    res.clearCookie('jwt');
     res.send({ message: successMessages.logoutMessage });
   } catch (err) {
     next(err);
