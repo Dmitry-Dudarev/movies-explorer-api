@@ -105,26 +105,63 @@ module.exports.getCurrentUserData = (req, res, next) => {
     .catch(next);
 };
 
+// // редактирование данных пользователя
+// module.exports.updateUser = (req, res, next) => {
+//   const { name, email } = req.body;
+//   // после редактирования вернется обновленный объект пользователя
+//   User.findByIdAndUpdate(req.user._id, { name, email }, {
+//     new: true,
+//     runValidators: true,
+//   })
+//     .then((user) => {
+//       if (!user) {
+//         throw new NotFoundError(errorMessages
+//           .updateUserNotFoundErrorMessage);
+//       } else {
+//         res.send(user);
+//       }
+//     })
+//     .catch((err) => {
+//       if (err.name === 'ValidationError') {
+//         const error = new ValidationError(errorMessages
+//           .updateUserValidationErrorMessage);
+//         next(error);
+//       } else {
+//         next(err);
+//       }
+//     });
+// };
+
 // редактирование данных пользователя
 module.exports.updateUser = (req, res, next) => {
   const { name, email } = req.body;
-  // после редактирования вернется обновленный объект пользователя
-  User.findByIdAndUpdate(req.user._id, { name, email }, {
-    new: true,
-    runValidators: true,
-  })
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError(errorMessages
-          .updateUserNotFoundErrorMessage);
+  // Сначала проверяем, не занят ли новый email другим пользователем
+  User.findOne({ email })
+    .then((userWithSameEmail) => {
+      if (userWithSameEmail && userWithSameEmail._id.toString() !== req.user._id.toString()) {
+        // Если email уже занят и id пользователя не совпадают, бросаем ошибку ConflictError
+        throw new EmailDuplicationError(errorMessages.updateUserEmailDuplicationErrorMessage);
+      }
+      // Если всё в порядке, обновляем пользователя
+      return User.findByIdAndUpdate(req.user._id, { name, email }, {
+        new: true,
+        runValidators: true,
+      });
+    })
+    .then((updatedUser) => {
+      if (!updatedUser) {
+        // Если пользователь не найден, бросаем ошибку NotFoundError
+        throw new NotFoundError(errorMessages.updateUserNotFoundErrorMessage);
       } else {
-        res.send(user);
+        res.send(updatedUser);
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        const error = new ValidationError(errorMessages
-          .updateUserValidationErrorMessage);
+      if (err instanceof NotFoundError) {
+        const error = new NotFoundError(errorMessages.updateUserEmailDuplicationErrorMessage);
+        next(error);
+      } else if (err.name === 'ValidationError') {
+        const error = new ValidationError(errorMessages.updateUserValidationErrorMessage);
         next(error);
       } else {
         next(err);
